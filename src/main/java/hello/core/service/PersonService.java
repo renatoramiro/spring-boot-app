@@ -23,6 +23,10 @@ public class PersonService {
 	public List<Person> list() {
 		return personRepository.findAll();
 	}
+	
+	public List<Person> queryByFirstName(String name) {
+		return personRepository.buscaPeloPrimeiroNome(name);
+	}
 
 	public Person get(Integer id) {
 		Person person = personRepository.findOne(id);
@@ -31,7 +35,7 @@ public class PersonService {
 	}
 	
 	public Person getByName(String name) {
-		return personRepository.findFirst2ByFirstNameOrderByLastNameDesc(name);
+		return personRepository.findOneByFirstNameOrderByLastNameDesc(name);
 	}
 
 	public Person save(Person person) {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import hello.core.model.Person;
 import hello.core.service.PersonService;
@@ -22,8 +23,12 @@ public class PersonController {
 	private PersonService personService;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<Person>> list() {
-		return new ResponseEntity<List<Person>>(personService.list(), HttpStatus.OK);
+	public ResponseEntity<List<Person>> list(@RequestParam(value = "name", required = false) String name) {
+		if (name == null || name.isEmpty()) {
+			return new ResponseEntity<List<Person>>(personService.list(), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<List<Person>>(personService.queryByFirstName(name), HttpStatus.OK);
+		}
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)

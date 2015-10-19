@@ -34,6 +34,7 @@ public class Avatar implements Serializable {
 	@Column(name = "file_path", nullable = true)
 	private String filePath;
 
+	@JsonIgnore
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
 	private Person person;
 
