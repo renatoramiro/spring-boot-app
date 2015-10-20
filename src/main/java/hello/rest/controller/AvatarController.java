@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import hello.core.model.Avatar;
 import hello.core.repository.AvatarRepository;
 import hello.core.repository.PersonRepository;
+import hello.rest.model.AvatarRest;
 import utils.AppHelper;
 
 @Controller
@@ -64,12 +65,13 @@ public class AvatarController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Avatar> createWithFolder(@RequestParam(value = "file", required = true) MultipartFile file,
+	public ResponseEntity<AvatarRest> createWithFolder(
+			@RequestParam(value = "file", required = true) MultipartFile file,
 			@RequestParam(value = "personId", required = true) Integer personId) {
+		
 		this.createAvatarFolder();
 		Avatar avatar = new Avatar();
 		String imageName = AppHelper.crypt(Integer.toString(avatar.hashCode()));
-		System.out.println(String.format("Image name: [%s].", imageName));
 		String path = PATH + imageName + this.getFileExtension(file.getOriginalFilename());
 		File ff = new File(path);
 
@@ -77,16 +79,16 @@ public class AvatarController {
 			file.transferTo(ff);
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
-			return new ResponseEntity<Avatar>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<AvatarRest>(HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return new ResponseEntity<Avatar>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<AvatarRest>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		avatar.setFilePath(ff.getAbsolutePath());
 		avatar.setPerson(personRepository.findOne(personId));
 		avatarRepository.saveAndFlush(avatar);
-		return new ResponseEntity<Avatar>(avatar, HttpStatus.OK);
+		return new ResponseEntity<AvatarRest>(AvatarRest.fromCore(avatar), HttpStatus.OK);
 	}
 
 	private void createAvatarFolder() {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import hello.core.model.Person;
 import hello.core.service.PersonService;
+import hello.rest.model.PersonRest;
 
 @Controller
 @RequestMapping(value = "/people")
@@ -23,40 +24,41 @@ public class PersonController {
 	private PersonService personService;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<Person>> list(@RequestParam(value = "name", required = false) String name) {
+	public ResponseEntity<List<PersonRest>> list(@RequestParam(value = "name", required = false) String name) {
 		if (name == null || name.isEmpty()) {
-			return new ResponseEntity<List<Person>>(personService.list(), HttpStatus.OK);
+			return new ResponseEntity<List<PersonRest>>(PersonRest.fromCore(personService.list()), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<List<Person>>(personService.queryByFirstName(name), HttpStatus.OK);
+			return new ResponseEntity<List<PersonRest>>(PersonRest.fromCore(personService.queryByFirstName(name)),
+					HttpStatus.OK);
 		}
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public ResponseEntity<Person> show(@PathVariable Integer id) {
+	public ResponseEntity<PersonRest> show(@PathVariable Integer id) {
 		Person person = personService.get(id);
 		if (person != null) {
-			return new ResponseEntity<Person>(person, HttpStatus.OK);
+			return new ResponseEntity<PersonRest>(PersonRest.fromCore(person), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<Person>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<PersonRest>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Person> create(@RequestBody Person person) {
-		return new ResponseEntity<Person>(personService.save(person), HttpStatus.OK);
+	public ResponseEntity<PersonRest> create(@RequestBody Person person) {
+		return new ResponseEntity<PersonRest>(PersonRest.fromCore(personService.save(person)), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Person> update(@PathVariable Integer id, @RequestBody Person person) {
-		return new ResponseEntity<Person>(personService.update(id, person), HttpStatus.OK);
+	public ResponseEntity<PersonRest> update(@PathVariable Integer id, @RequestBody Person person) {
+		return new ResponseEntity<PersonRest>(PersonRest.fromCore(personService.update(id, person)), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Person> delete(@PathVariable Integer id) {
+	public ResponseEntity<PersonRest> delete(@PathVariable Integer id) {
 		if (personService.delete(id)) {
-			return new ResponseEntity<Person>(HttpStatus.OK);
+			return new ResponseEntity<PersonRest>(HttpStatus.OK);
 		} else {
-			return new ResponseEntity<Person>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<PersonRest>(HttpStatus.BAD_REQUEST);
 		}
 	}
 }

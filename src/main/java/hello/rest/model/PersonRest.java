@@ -1,6 +1,10 @@
 package hello.rest.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import hello.core.model.Person;
 
 public class PersonRest implements Serializable {
 
@@ -8,10 +12,10 @@ public class PersonRest implements Serializable {
 	private Integer id;
 	private String firstName;
 	private String lastName;
-	
+
 	public PersonRest() {
 	}
-	
+
 	public PersonRest(Integer id, String firstName, String lastName) {
 		this.id = id;
 		this.firstName = firstName;
@@ -40,6 +44,31 @@ public class PersonRest implements Serializable {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public Person toCore() {
+		Person person = new Person();
+		person.setId(getId());
+		person.setFirstName(getFirstName());
+		person.setLastName(getLastName());
+		return person;
+	}
+
+	public static PersonRest fromCore(Person person) {
+		PersonRest rest = new PersonRest();
+		rest.setId(person.getId());
+		rest.setFirstName(person.getFirstName());
+		rest.setLastName(person.getLastName());
+
+		return rest;
+	}
+
+	public static List<PersonRest> fromCore(List<Person> people) {
+		List<PersonRest> result = new ArrayList<PersonRest>();
+		for (Person person : people) {
+			result.add(fromCore(person));
+		}
+		return result;
 	}
 
 	@Override
